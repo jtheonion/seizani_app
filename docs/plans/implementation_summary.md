@@ -45,3 +45,18 @@
 ### 残課題
 - Mermaidレンダラーによる描画確認は未実施。Markdownとしての保存と構文上の安全性を優先して確認した。
 - 設定画面、履歴画面、処理キャンセルUIなど未実装領域は、追加仕様確定後にフロー図を更新する。
+
+## 2026-05-04 輪郭線抽出調査資料の取り込み
+
+### 実施内容
+- 今後の実装検討用資料として、`<local-research-source>` を `docs/plans/research/edge_contour_detection_survey_2026.md` にコピーした。
+- `docs/plans/research/` を、計画・要件・運用マニュアルとは分離した調査資料置き場として追加した。
+
+### 検証結果
+- `sed -n '1,220p' .agent/DOCS.md`: 成功。文書管理ポリシーと canonical documents の更新ルールを確認した。
+- `find docs/plans -maxdepth 3 -type d | sort`: 成功。既存の `docs/plans/` 配下構造を確認した。
+- `diff -q <local-research-source> docs/plans/research/edge_contour_detection_survey_2026.md`: 成功。コピー元とコピー先に差分なし。
+- `wc -l docs/plans/research/edge_contour_detection_survey_2026.md`: 成功。コピー先は 499 行。
+
+### 残課題
+- 調査資料の内容精査、採用候補手法の比較、実装タスク化は未実施。
