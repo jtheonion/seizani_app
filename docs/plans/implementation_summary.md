@@ -1,5 +1,5 @@
 # implementation_summary.md
-- 最終更新日: 2026-04-30
+- 最終更新日: 2026-05-05
 - バージョン: 1.0
 
 ## 2026-04-30 seizani_app 独立プロジェクト化
@@ -60,3 +60,39 @@
 
 ### 残課題
 - 調査資料の内容精査、採用候補手法の比較、実装タスク化は未実施。
+
+## 2026-05-05 2段階線画変換への輪郭線抽出方式追加計画
+
+### 実施内容
+- `AGENTS.md`、`.agent/DOCS.md`、`.agent/PLANS.md`、planning / implementation / verification ルールを確認した。
+- `docs/plans/research/edge_contour_detection_survey_2026.md` を読み、追加候補方式を端末内 v1 候補、PoC 候補、研究追跡候補へ分類した。
+- 既存の2段階変換フローを `docs/plans/designs.md` と `lib/` 配下の実装から確認した。
+- PiDiNet、DexiNed、MEMO、MatchED、EasyControlEdge、EDMB、SAUGE、TRACE、MS2Edge、DDN の外部一次情報または公式実装を確認した。
+- `docs/plans/execplans/add_edge_contour_methods_to_two_stage_lineart.md` を新規作成した。
+- `docs/plans/plans.md` に今回の計画決定を追記した。
+
+### 外部調査結果
+- PiDiNet: 公式 GitHub と ICCV 2021 論文を確認。軽量・高速で checkpoint があり、v1 の最有力候補とした。
+- DexiNed: 公式 GitHub と OpenCV Hugging Face 配布モデルを確認。既存実装の基準線として維持する。
+- MEMO: arXiv を確認。crisp edge の最新候補だが、公式実装未確認かつ DINOv2 系の重い構成のため watchlist とした。
+- MatchED: arXiv、project page、GitHub を確認。GitHub は `Coming Soon...` のみで、実装依存にしない。
+- EasyControlEdge: arXiv を確認。foundation model fine-tuning のため端末内 v1 には重い。
+- EDMB / SAUGE / DDN: 公式実装を確認。PyTorch / Mamba / SAM / CAFormer 依存があり、ONNX 互換性と端末速度検証前は PoC 扱いにする。
+- TRACE: arXiv と GitHub を確認。コード・モデル公開予定表記のため実装依存にしない。
+- MS2Edge: arXiv を確認。SNN による省電力候補だが公式実装未確認のため研究追跡に留める。
+
+### 検証結果
+- `git status --short`: 成功。作業開始時点で未コミット差分なしを確認した。
+- `sed -n '1,220p' docs/plans/implementation_summary.md`: 成功。既存の実施記録形式を確認した。
+- `sed -n '1,180p' docs/plans/plans.md`: 成功。既存の計画ログ形式を確認した。
+- `apply_patch`: 成功。ExecPlan 新規作成、`plans.md` 追記、`implementation_summary.md` 追記を行った。
+- `rg -n "PiDiNet|MEMO|MatchED|EasyControlEdge|EDMB|SAUGE|TRACE|MS2Edge|DDN|確認日" docs/plans/execplans/add_edge_contour_methods_to_two_stage_lineart.md`: 成功。対象資料の方式と外部確認日が計画書に含まれることを確認した。
+- `rg -n "輪郭線抽出方式追加|PiDiNet線画|add_edge_contour_methods_to_two_stage_lineart" docs/plans/plans.md docs/plans/implementation_summary.md`: 成功。計画ログと実施記録に今回の計画が記録されていることを確認した。
+- `git diff --check`: 成功。空白エラーなし。
+- `git status --short`: 成功。変更対象が `docs/plans/execplans/add_edge_contour_methods_to_two_stage_lineart.md`、`docs/plans/plans.md`、`docs/plans/implementation_summary.md` に限定されていることを確認した。
+
+### 残課題
+- PiDiNet の公式 checkpoint から Flutter ONNX Runtime 互換モデルを再現 export できるかは未確認。
+- PiDiNet checkpoint / export 済み ONNX のライセンスと再配布可否は未確認。
+- MEMO、MatchED、TRACE の公式コード・重み公開状況は将来再確認が必要。
+- 実装変更は未実施。

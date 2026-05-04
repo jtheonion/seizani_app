@@ -1,5 +1,5 @@
 # plans.md
-- 最終更新日: 2026-04-28
+- 最終更新日: 2026-05-05
 - バージョン: 1.0
 
 ## 文書管理
@@ -89,3 +89,19 @@ PM、デザイナー、エンジニア、QAがレビューできる粒度で、`
 #### 検証
 - Markdown内に機能カテゴリ別のMermaidコードブロックがあることを確認する。
 - MermaidノードIDは英数字とアンダースコア中心にし、構文エラーになりやすい長文条件を避ける。
+
+### 2026-05-05 2段階線画変換への輪郭線抽出方式追加計画
+
+#### 目的
+`docs/plans/research/edge_contour_detection_survey_2026.md` の調査結果を、既存の「画像 -> 線画 -> 星装飾」2段階変換へ追加するための実装計画として整理する。実装は行わず、端末内実装可能性、既存フローとの境界、検証条件、外部根拠を固定する。
+
+#### 決定
+- 計画書は `docs/plans/execplans/add_edge_contour_methods_to_two_stage_lineart.md` に保存する。
+- v1 の実装対象候補は `PiDiNet線画` に絞る。既存の `DexiNed線画` は置き換えず、基準線として維持する。
+- MEMO、MatchED、EasyControlEdge、EDMB、SAUGE、TRACE、MS2Edge、DDN は、コード公開状況、モデルサイズ、ONNX互換性、端末内処理負荷のリスクにより watchlist / PoC 扱いにする。
+- 追加方式は2段階変換の第1段 `LineArtProcessor.processToLineArt()` に閉じ、第2段の `LineArtStarDecorator` / `decorateLineArt()` 経路は変更しない。
+- モデル本体は Git 管理せず、公式実装または公式 checkpoint から再現できる取得・変換手順と SHA256 検証を必須にする。
+
+#### 検証
+- 計画書に背景、方式要約、既存フローとの関係、実装方針、変更候補ファイル、検証方針、リスク、受け入れ条件、外部根拠 URL と確認日が含まれることを確認する。
+- `rg` と `git diff --check` で計画書・計画ログ・実施記録の整合と空白エラーを確認する。
