@@ -172,11 +172,10 @@
 - `git push -u origin main`: 成功。`main` を `origin/main` に push し、upstream を設定した。
 - `gh repo edit jtheonion/seizani_app --enable-issues --add-topic flutter --add-topic onnx --add-topic line-art --add-topic constellation --add-topic image-processing --add-topic ai`: 成功。Issues と topics を設定した。
 - `gh repo view jtheonion/seizani_app --json nameWithOwner,url,isPrivate,stargazerCount,forkCount,pushedAt,description,repositoryTopics,hasIssuesEnabled,licenseInfo,defaultBranchRef`: 成功。public、default branch `main`、MIT License、Issues有効、topics設定済みを確認した。
-- `gh run list --repo jtheonion/seizani_app --limit 5`: 成功。初回 `Flutter CI` は実行中として確認した。
+- `gh run list --repo jtheonion/seizani_app --limit 5`: 成功。`feat: prepare seizani app for OSS publication` と `docs: record OSS publication setup` の `Flutter CI` はどちらも `completed/success` を確認した。
 - `git status --short --branch`: 成功。`main...origin/main` で未コミット差分なしを確認した。
 - `git remote -v`: 成功。`origin` は `https://github.com/jtheonion/seizani_app.git`。
 
 ### 残課題
-- GitHub Actions 初回 CI は確認時点で `in_progress`。完了後の結論確認が必要。
 - `dart analyze` の info レベル指摘は既存品質課題として残す。
 - PiDiNet の商用利用可否は公式 LICENSE の混在表記が残るため、商用公開時は著者確認が必要。
