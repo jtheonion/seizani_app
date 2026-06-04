@@ -201,4 +201,12 @@
 - Git 管理対象の env/credential/certificate/key/provisioning/model/archive/binary artifact 名検索: 成功。ヒットなし。
 
 ### 残課題
-- 通常 commit だけでは公開済み Git 履歴に削除前の人物画像と絶対パスが残るため、完全削除には history rewrite と `--force-with-lease` push が必要。
+- 公開済み Git 履歴に残っていた削除前の人物画像とローカル絶対パスについて、history rewrite を実施した。
+- rewrite 後の Git 履歴検索で、人物画像名、ユーザー固有パス、秘密情報らしい具体値のヒットがないことを確認した。
+- GitHub 側には `--force-with-lease` で更新する。
+
+### 履歴再監査の検証結果
+- `git rev-list --all --objects` による履歴内オブジェクト名検索: 成功。人物画像名、ユーザー固有パス、ONNX モデル本体、`.DS_Store` のヒットなし。
+- `git rev-list --all | xargs git grep` による履歴内本文検索: 成功。人物画像名、ユーザー固有パス、秘密情報らしい具体値のヒットなし。
+- `rg` による current tree 本文検索: 成功。人物画像名、ユーザー固有パス、秘密情報らしい具体値のヒットなし。
+- `git ls-files` による公開対象ファイル名検索: 成功。`assets/models/.gitkeep` 以外にモデル、env、証明書、秘密鍵、provisioning profile、`.DS_Store` は含まれていない。
