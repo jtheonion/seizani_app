@@ -210,3 +210,6 @@
 - `git rev-list --all | xargs git grep` による履歴内本文検索: 成功。人物画像名、ユーザー固有パス、秘密情報らしい具体値のヒットなし。
 - `rg` による current tree 本文検索: 成功。人物画像名、ユーザー固有パス、秘密情報らしい具体値のヒットなし。
 - `git ls-files` による公開対象ファイル名検索: 成功。`assets/models/.gitkeep` 以外にモデル、env、証明書、秘密鍵、provisioning profile、`.DS_Store` は含まれていない。
+- `git push --force-with-lease` による GitHub main 更新: 成功。書き換え済み履歴を public repo に反映した。
+- `git ls-remote origin refs/heads/main`: 成功。GitHub 側 main が書き換え済み HEAD を指していることを確認した。
+- `gh run list --repo jtheonion/seizani_app --limit 5`: 成功。履歴書き換え前に実行済みの `Flutter CI` は成功状態として確認できた。今回の記録コミットは `[skip ci]` のため追加 CI は発火していない。
