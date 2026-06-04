@@ -105,3 +105,20 @@ PM、デザイナー、エンジニア、QAがレビューできる粒度で、`
 #### 検証
 - 計画書に背景、方式要約、既存フローとの関係、実装方針、変更候補ファイル、検証方針、リスク、受け入れ条件、外部根拠 URL と確認日が含まれることを確認する。
 - `rg` と `git diff --check` で計画書・計画ログ・実施記録の整合と空白エラーを確認する。
+
+### 2026-05-05 PiDiNet線画方式追加
+
+#### 目的
+2段階変換の第1段に `PiDiNet線画` を追加し、軽量な輪郭線抽出方式を既存の `DexiNed線画` と並べて選べるようにする。第2段の `decorateLineArt()` / `LineArtStarDecorator` は維持する。
+
+#### 決定
+- `LineArtAlgorithm.pidinet`、`LineArtPreset.pidinet`、`PidinetOnnxLineArtService` を追加する。
+- 公式 `table5_pidinet.pth` から `assets/models/pidinet_table5_carv4_ort.onnx` を生成する。checkpoint SHA256 は `80860ac267258b5f27486e0ef152a211d0b08120f62aeb185a050acc30da486c`。
+- PiDiNet は非商用前提で通常UIに公開する。公式 LICENSE の混在表記は `open_questions.md` と metadata policy に残す。
+- PiDiNet v1 は専用調整値を追加せず、`edgeThreshold`、`lineThickness`、`contrast`、`smoothLines` の既存値だけを使う。
+- モデル本体は Git 管理対象外にし、`tool/export_pidinet_onnx.py` で再生成する。
+
+#### 検証
+- PiDiNet後処理、JSON round-trip、metadata、プリセット登録、Widget上の表示をテストする。
+- `python3 tool/export_pidinet_onnx.py` で公式 checkpoint から ONNX を生成できることを確認する。
+- `flutter test` と `dart analyze` を実施する。

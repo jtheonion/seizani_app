@@ -1,5 +1,5 @@
 # requirements.md
-- 最終更新日: 2026-04-28
+- 最終更新日: 2026-05-05
 - バージョン: 1.0
 
 ## 文書管理
@@ -21,7 +21,7 @@
 ### 受け入れ条件
 - AC-001: `LineArtAlgorithm.dexined` がJSON round-tripできる。
 - AC-002: `DexiNed線画` が `lineArtPresetsProvider` から選べる。
-- AC-003: `DexiNedOnnxLineArtService` が `assets/models/edge_detection_dexined_2024sep.onnx` を遅延ロードする。
+- AC-003: `DexiNedOnnxLineArtService` が `assets/models/edge_detection_dexined_2024sep_ort.onnx` を遅延ロードする。
 - AC-004: `tool/fetch_dexined_model.dart` がOpenCV配布ONNXを取得し、SHA256 `a50d01dc8481549c7dedb9eb3e0123b810a016520df75e4669a504609982cdd0` を検証する。
 
 ## DexiNed調整UI
@@ -59,3 +59,23 @@
 - AC-010: `星座に変換` 実行時に `decorateLineArt()` が呼ばれ、`processLineArt()` は呼ばれない。
 - AC-011: 生成後も調整値を変更して再生成できる。
 - AC-012: `StarDecorationParams` と `LineArtStarDecorator` の単体テストが通る。
+
+## PiDiNet端末内線画変換
+
+### 機能要件
+- REQ-FUNC-013: 線画変換プリセットに `PiDiNet線画` を追加し、既存の `DexiNed線画`、`写真`、`イラスト`、`風景`、`鉛筆スケッチ` を残すこと。
+- REQ-FUNC-014: `PiDiNet線画` 選択時は端末内ONNX推論で黒線白背景の線画PNGを生成すること。
+- REQ-FUNC-015: `PiDiNet線画` は第1段の線画変換だけに追加し、第2段の `decorateLineArt()` / `LineArtStarDecorator` 経路を変更しないこと。
+- REQ-FUNC-016: PiDiNetモデル本体はgit管理対象にせず、公式 checkpoint からのONNX export手順とSHA256検証で再現可能にすること。
+
+### 非機能要件
+- REQ-NFR-008: PiDiNet checkpoint は非商用前提で通常UIに公開し、license policy をmetadataと実装記録に残すこと。
+- REQ-NFR-009: PiDiNet専用調整値はv1では追加せず、既存の `edgeThreshold`、`lineThickness`、`contrast`、`smoothLines` を使うこと。
+- REQ-NFR-010: PiDiNetの後処理、JSON永続化、プリセット公開をテストで検証すること。
+
+### 受け入れ条件
+- AC-013: `LineArtAlgorithm.pidinet` がJSON round-tripできる。
+- AC-014: `PiDiNet線画` が `lineArtPresetsProvider` から選べる。
+- AC-015: `PidinetOnnxLineArtService` が `assets/models/pidinet_table5_carv4_ort.onnx` を遅延ロードする。
+- AC-016: `tool/export_pidinet_onnx.py` が公式 `table5_pidinet.pth` のSHA256 `80860ac267258b5f27486e0ef152a211d0b08120f62aeb185a050acc30da486c` を検証し、ONNXを生成できる。
+- AC-017: PiDiNet後処理で `lineThickness` を上げると黒線ピクセルが増える。

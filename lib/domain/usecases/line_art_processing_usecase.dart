@@ -40,9 +40,11 @@ class LineArtProcessingUseCase {
         originalImage: image,
         status: LineArtProcessingStatus.processing,
         progress: 0.3,
-        currentStep: parameters.algorithm == LineArtAlgorithm.dexined
-            ? 'DexiNed推論中...'
-            : 'エッジ検出中...',
+        currentStep: switch (parameters.algorithm) {
+          LineArtAlgorithm.dexined => 'DexiNed推論中...',
+          LineArtAlgorithm.pidinet => 'PiDiNet推論中...',
+          _ => 'エッジ検出中...',
+        },
         startTime: DateTime.now(),
         parameters: parameters,
       );
@@ -136,6 +138,8 @@ class LineArtProcessingUseCase {
         );
       case LineArtPreset.dexined:
         return LineArtParameters.dexinedDefaults;
+      case LineArtPreset.pidinet:
+        return LineArtParameters.pidinetDefaults;
     }
   }
 
@@ -223,4 +227,5 @@ enum LineArtPreset {
   landscape,
   pencilSketch,
   dexined,
+  pidinet,
 }

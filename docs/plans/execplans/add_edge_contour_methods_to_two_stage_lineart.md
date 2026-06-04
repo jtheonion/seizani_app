@@ -11,9 +11,9 @@
 - [x] 既存の2段階線画変換フローを確認した。
 - [x] 外部一次情報を確認し、実装候補を分類した。
 - [x] 実装計画を作成した。
-- [ ] 将来実装時に requirements / open questions を同期する。
-- [ ] 将来実装時にコード、テスト、モデル取得手順を追加する。
-- [ ] 将来実装時に検証結果を `docs/plans/implementation_summary.md` へ記録する。
+- [x] 将来実装時に requirements / open questions を同期する。
+- [x] 将来実装時にコード、テスト、モデル取得手順を追加する。
+- [x] 将来実装時に検証結果を `docs/plans/implementation_summary.md` へ記録する。
 
 ## Surprises & Discoveries
 - 既存実装では、第1段は `LineArtAlgorithm` と `LineArtProcessor.processToLineArt()`、第2段は `LineArtStarDecorator` に分離されている。追加方式は第1段だけへ閉じられる。
@@ -34,6 +34,9 @@
 - 現時点では計画書作成のみ完了。実装は未実施。
 - 調査資料の方式は、端末内 v1 候補、PoC 候補、研究追跡候補に分類できた。
 - 最新研究の多くはコード未公開、重い foundation model、学習方式寄りであり、Flutter 端末内処理へ直結させるにはリスクが高い。
+- 2026-05-05 実装で `PiDiNet線画` を第1段プリセットとして追加した。
+- `tool/export_pidinet_onnx.py` により公式 `table5_pidinet.pth` から `assets/models/pidinet_table5_carv4_ort.onnx` を生成できることを確認した。
+- 公式 LICENSE の混在表記は、ユーザー判断により非商用前提で通常UI公開とした。
 
 ## Context and Orientation
 - ルール:

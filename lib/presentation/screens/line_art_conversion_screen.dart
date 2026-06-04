@@ -1074,6 +1074,8 @@ class _LineArtConversionScreenState
         return Icons.auto_fix_high;
       case LineArtAlgorithm.dexined:
         return Icons.auto_awesome_motion;
+      case LineArtAlgorithm.pidinet:
+        return Icons.filter_center_focus;
     }
   }
 

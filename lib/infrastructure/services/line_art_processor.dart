@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import '../../domain/entities/image_entity.dart';
 import '../../domain/entities/line_art_entity.dart';
 import 'dexined_onnx_line_art_service.dart' hide ProcessingException;
+import 'pidinet_onnx_line_art_service.dart' hide ProcessingException;
 
 /// Service for processing images into line art
 class LineArtProcessor {
@@ -63,6 +64,56 @@ class LineArtProcessor {
 
         debugPrint(
           '✅ [DEBUG] DexiNed線画処理完了 - 処理時間: ${stopwatch.elapsedMilliseconds}ms',
+        );
+
+        return LineArtEntity(
+          id: _uuid.v4(),
+          originalImageId: imageEntity.id,
+          lineArtImageBytes: lineArtData.bytes,
+          width: lineArtData.width,
+          height: lineArtData.height,
+          createdAt: DateTime.now(),
+          metadata: metadata,
+        );
+      }
+
+      if (parameters.algorithm == LineArtAlgorithm.pidinet) {
+        if (imageEntity.bytes == null) {
+          throw ProcessingException('画像データが見つかりません');
+        }
+
+        final lineArtData = await PidinetOnnxLineArtService.process(
+          imageEntity.bytes!,
+          parameters: parameters,
+        );
+        stopwatch.stop();
+
+        final metadata = LineArtMetadata(
+          processingTime: stopwatch.elapsed,
+          algorithm: parameters.algorithm,
+          edgeStrength: parameters.edgeThreshold,
+          contrastLevel: parameters.contrast,
+          algorithmVersion: algorithmVersion,
+          parameters: {
+            ...parameters.toJson(),
+            'modelAsset': PidinetOnnxLineArtService.modelAssetPath,
+            'modelInput': PidinetOnnxLineArtService.inputName,
+            'modelOutput': PidinetOnnxLineArtService.outputName,
+            'modelInputShape': [
+              1,
+              3,
+              PidinetOnnxLineArtService.modelHeight,
+              PidinetOnnxLineArtService.modelWidth,
+            ],
+            'checkpointSha256': PidinetOnnxLineArtService.checkpointSha256,
+            'licensePolicy': PidinetOnnxLineArtService.licensePolicy,
+            'threshold': parameters.edgeThreshold,
+            'lineThickness': parameters.lineThickness,
+          },
+        );
+
+        debugPrint(
+          '✅ [DEBUG] PiDiNet線画処理完了 - 処理時間: ${stopwatch.elapsedMilliseconds}ms',
         );
 
         return LineArtEntity(
@@ -206,6 +257,8 @@ class LineArtProcessor {
         return _applyAdaptiveEdgeDetection(image, parameters);
       case LineArtAlgorithm.dexined:
         throw ProcessingException('DexiNedはONNX推論サービス経由で実行してください');
+      case LineArtAlgorithm.pidinet:
+        throw ProcessingException('PiDiNetはONNX推論サービス経由で実行してください');
     }
   }
 

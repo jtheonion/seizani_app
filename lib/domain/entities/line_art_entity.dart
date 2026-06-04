@@ -132,7 +132,8 @@ enum LineArtAlgorithm {
   xdog('Extended Difference of Gaussians'),
   pencilSketch('Pencil Sketch Effect'),
   adaptiveEdge('Adaptive Edge Detection'),
-  dexined('DexiNed線画');
+  dexined('DexiNed線画'),
+  pidinet('PiDiNet線画');
 
   const LineArtAlgorithm(this.displayName);
 
@@ -160,6 +161,15 @@ class LineArtParameters {
     smoothLines: false,
     dexinedPercentile: dexinedDefaultPercentile,
     dexinedMinThreshold: dexinedDefaultMinThreshold,
+  );
+
+  static const LineArtParameters pidinetDefaults = LineArtParameters(
+    algorithm: LineArtAlgorithm.pidinet,
+    edgeThreshold: 0.3,
+    lineThickness: 1.0,
+    contrast: 1.0,
+    invertColors: false,
+    smoothLines: false,
   );
 
   final LineArtAlgorithm algorithm;

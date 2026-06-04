@@ -315,6 +315,7 @@ final lineArtPresetsProvider = Provider<Map<String, LineArtParameters>>((ref) {
 
   return {
     'DexiNed線画': useCase.getPresetParameters(LineArtPreset.dexined),
+    'PiDiNet線画': useCase.getPresetParameters(LineArtPreset.pidinet),
     '写真': useCase.getPresetParameters(LineArtPreset.photograph),
     'イラスト': useCase.getPresetParameters(LineArtPreset.illustration),
     '風景': useCase.getPresetParameters(LineArtPreset.landscape),

@@ -140,15 +140,19 @@ void main() {
 
       expect(
         presets.keys,
-        containsAll(['写真', 'イラスト', '風景', '鉛筆スケッチ', 'DexiNed線画']),
+        containsAll(['写真', 'イラスト', '風景', '鉛筆スケッチ', 'DexiNed線画', 'PiDiNet線画']),
       );
       expect(presets['DexiNed線画']?.algorithm, LineArtAlgorithm.dexined);
+      expect(presets['PiDiNet線画']?.algorithm, LineArtAlgorithm.pidinet);
       expect(presets['写真']?.algorithm, LineArtAlgorithm.xdog);
     });
 
     testWidgets('conversion screen shows DexiNed selection card', (
       tester,
     ) async {
+      await tester.binding.setSurfaceSize(const Size(800, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
       final image = ImageEntity(
         id: 'test-image',
         path: '',
@@ -164,8 +168,12 @@ void main() {
       );
 
       expect(find.text('変換方法を選択:'), findsOneWidget);
-      expect(find.text('写真'), findsOneWidget);
       expect(find.text('DexiNed線画'), findsWidgets);
+      expect(find.text('PiDiNet線画'), findsWidgets);
+
+      await tester.drag(find.byType(GridView), const Offset(0, -300));
+      await tester.pump();
+      expect(find.text('写真'), findsWidgets);
     });
 
     testWidgets('DexiNed card opens adjustable settings sheet', (tester) async {

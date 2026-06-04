@@ -96,3 +96,78 @@
 - PiDiNet checkpoint / export 済み ONNX のライセンスと再配布可否は未確認。
 - MEMO、MatchED、TRACE の公式コード・重み公開状況は将来再確認が必要。
 - 実装変更は未実施。
+
+## 2026-05-05 PiDiNet線画方式追加
+
+### 実施内容
+- 2段階変換の第1段に `PiDiNet線画` を追加した。
+- `LineArtAlgorithm.pidinet`、`LineArtPreset.pidinet`、`LineArtParameters.pidinetDefaults` を追加した。
+- `PidinetOnnxLineArtService` を追加し、RGB正規化、ONNX推論、probability/logit後処理、二値化、線幅反映を実装した。
+- `LineArtProcessor.processToLineArt()` に PiDiNet ONNX 分岐を追加し、metadataにmodel asset、input/output、shape、checkpoint SHA256、license policy、threshold、lineThicknessを保存するようにした。
+- `lineArtPresetsProvider` と `LineArtConversionScreen` を更新し、`PiDiNet線画` カードを通常UIに追加した。DexiNed調整シートはDexiNed専用のまま維持した。
+- `tool/export_pidinet_onnx.py` を追加し、公式 PiDiNet source archive と `table5_pidinet.pth` から `assets/models/pidinet_table5_carv4_ort.onnx` を生成できるようにした。
+- `test/pidinet_line_art_test.dart` を追加し、PiDiNet後処理、線幅、logit対応、JSON round-trip、metadataを検証した。
+- `test/dexined_line_art_test.dart` を更新し、既存DexiNed挙動とPiDiNetプリセット表示を検証した。
+- `docs/plans/requirements.md`、`docs/plans/designs.md`、`docs/plans/plans.md`、`docs/plans/open_questions.md`、ExecPlanを同期した。
+
+### 外部確認・モデル生成
+- PiDiNet公式 GitHub: `https://github.com/hellozhuo/pidinet`
+- 使用 checkpoint: `trained_models/table5_pidinet.pth`
+- checkpoint SHA256: `80860ac267258b5f27486e0ef152a211d0b08120f62aeb185a050acc30da486c`
+- 生成モデル: `assets/models/pidinet_table5_carv4_ort.onnx`
+- 生成モデルは Git 管理対象外。別環境では `python3 -m pip install onnx` 後に `python3 tool/export_pidinet_onnx.py` を実行する。
+- 公式 LICENSE は研究目的・商用利用要連絡の文言とMIT文面が混在するため、今回はユーザー判断により非商用前提で通常UI公開とした。
+
+### 検証結果
+- `dart format lib/domain/entities/line_art_entity.dart lib/domain/usecases/line_art_processing_usecase.dart lib/infrastructure/services/line_art_processor.dart lib/infrastructure/services/pidinet_onnx_line_art_service.dart lib/presentation/providers/line_art_processing_provider.dart lib/presentation/screens/line_art_conversion_screen.dart test/dexined_line_art_test.dart test/pidinet_line_art_test.dart`: 成功。
+- `flutter test test/dexined_line_art_test.dart test/pidinet_line_art_test.dart`: 成功。14 tests passed。
+- `python3 tool/export_pidinet_onnx.py`: 初回は `onnx` 未導入で失敗。`python3 -m pip install --user onnx` 後、sandbox内ネットワーク制限で失敗。承認付き再実行後、DataParallel由来の `module.` prefix不一致で失敗したため、script側でprefix正規化を追加した。
+- `python3 tool/export_pidinet_onnx.py`: 成功。公式source archive/checkpointを取得し、SHA256検証後に `assets/models/pidinet_table5_carv4_ort.onnx` を生成した。
+- `flutter test`: 成功。全 71 tests passed。
+- `dart analyze`: 成功扱い（exit 0）。既存同様 info レベル指摘 233 件あり。主な内容は `deprecated_member_use`, `avoid_print`, `curly_braces_in_flow_control_structures`, `unnecessary_import`。
+
+### 残課題
+- iOS Simulator / 実機での `PiDiNet線画 -> 星座に変換 -> 保存/共有対象画像生成` smoke test は未実施。
+- PiDiNet の商用利用可否は公式 LICENSE の混在表記が残るため、商用公開時は著者確認が必要。
+
+## 2026-05-05 PiDiNet線画カード表示順調整
+
+### 実施内容
+- iPhone画面で `PiDiNet線画` を見つけやすくするため、`lineArtPresetsProvider` の表示順を `DexiNed線画`、`PiDiNet線画`、`写真`、`イラスト`、`風景`、`鉛筆スケッチ` に変更した。
+- Widget test を更新し、初期表示で `DexiNed線画` と `PiDiNet線画` が見えること、スクロール後に既存の `写真` カードも表示されることを確認するようにした。
+
+### 検証結果
+- `dart format lib/presentation/providers/line_art_processing_provider.dart test/dexined_line_art_test.dart`: 成功。
+- `flutter test test/dexined_line_art_test.dart test/pidinet_line_art_test.dart`: 成功。14 tests passed。
+
+## 2026-06-05 GitHub公開public-readiness整備
+
+### 実施内容
+- public maintenance reviewpublic-readinessに、GitHub 公開候補として `seizani_app` を整備した。
+- `README.md` を公開向けに更新し、目的、主要機能、ONNX モデル取得/生成方針、検証コマンド、保守方針、ライセンス導線を明記した。
+- `pubspec.yaml` の説明を Flutter 初期値から、写真を線画・星座風画像へ変換する on-device ONNX inference app の説明へ更新した。
+- `LICENSE` を追加し、MIT License として公開できる状態にした。
+- `.github/workflows/flutter-ci.yml` を追加し、push / pull request で `flutter pub get`、`dart analyze`、`flutter test` を実行する最小 CI を定義した。
+- `PiDiNet線画` 表示順調整後に `写真` カードが初期表示外になるため、`test/line_art_star_decoration_test.dart` にスクロール操作を追加して既存テストを現 UI に合わせた。
+
+### 公開前衛生確認
+- Git 管理対象に `.DS_Store`、ONNX モデル本体、coverage 出力、build 出力が含まれていないことを確認した。
+- `rg` による秘密情報スキャンで、認証情報らしい値は検出されなかった。ヒットは `Task-Adaptive`、`relevant`、`tokens` などの一般語のみ。
+- `assets/models/*.onnx` は `.gitignore` 対象のまま維持し、モデル本体は再配布せず取得/生成手順だけを README に記載した。
+
+### 検証結果
+- `git status --short --branch`: 成功。作業開始時点の PiDiNet 関連未コミット差分と、今回追加した公開整備差分を確認した。
+- `git ls-files | rg '\.DS_Store$|assets/models|coverage|build'`: 成功。Git 管理対象の該当ヒットは `assets/models/.gitkeep` と Gradle build script のみ。
+- `rg -n "(ghp_|github_pat_|sk-|OPENAI_API_KEY|api[_-]?key|token|password|secret|client_secret|private_key)" . -S`: 成功。認証情報らしい値は検出されなかった。
+- `flutter pub get`: 成功。依存関係を解決済み。更新可能パッケージの通知のみ。
+- `dart format test/line_art_star_decoration_test.dart`: 成功。1ファイル確認、変更なし。
+- `dart analyze`: 成功扱い（exit 0）。既存 info レベル指摘 699 件あり。主な内容は `unnecessary_import`、`deprecated_member_use`、`prefer_initializing_formals`、`avoid_print`、`curly_braces_in_flow_control_structures`。
+- `flutter test test/line_art_star_decoration_test.dart`: 成功。5 tests passed。
+- `flutter test test/dexined_line_art_test.dart test/pidinet_line_art_test.dart`: 成功。14 tests passed。
+- `flutter test --concurrency=1`: 成功。全 71 tests passed。
+- `git diff --check`: 成功。空白エラーなし。
+
+### 残課題
+- GitHub remote 作成、commit、push、GitHub repo metadata 設定はこの記録時点では未完了。
+- `dart analyze` の info レベル指摘は既存品質課題として残す。
+- PiDiNet の商用利用可否は公式 LICENSE の混在表記が残るため、商用公開時は著者確認が必要。

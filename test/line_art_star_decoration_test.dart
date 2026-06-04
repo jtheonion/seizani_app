@@ -126,6 +126,8 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 100));
 
+        await tester.drag(find.byType(GridView), const Offset(0, -300));
+        await tester.pump();
         await tester.tap(find.text('写真'));
         await _pumpUntilFound(tester, find.text('線の太さ閾値'));
 
