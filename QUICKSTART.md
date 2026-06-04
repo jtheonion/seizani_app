@@ -3,7 +3,7 @@
 ## 1. 依存関係
 
 ```sh
-cd <project-root>
+cd seizani_app
 flutter pub get
 ```
 

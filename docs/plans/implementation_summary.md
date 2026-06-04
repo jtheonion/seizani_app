@@ -5,12 +5,12 @@
 ## 2026-04-30 seizani_app 独立プロジェクト化
 
 ### 実施内容
-- `<source-worktree>/seizani_app` を `<project-root>` にコピーした。
+- 既存作業ツリー配下にあった最新版候補の `seizani_app` を独立プロジェクトディレクトリへコピーした。
 - `project_starter_template_v4` の `AGENTS.md`, `.agent/`, `docs/`, `work/` を取り込んだ。
 - 既存の `seizani_app` 関連文書を `docs/plans/` に統合した。
 - `README.md` と `QUICKSTART.md` を独立プロジェクト向けに更新した。
 - DexiNed ONNX モデルは作業コピーに残し、Git 管理対象外とする方針を明記した。
-- `<project-root>`独立プロジェクトディレクトリを新規 Git リポジトリとして初期化した。
+- 独立プロジェクトディレクトリを新規 Git リポジトリとして初期化した。
 
 ### 検証結果
 - `flutter pub get`: 成功。依存関係を解決済み。更新可能パッケージの通知のみ。
@@ -49,7 +49,7 @@
 ## 2026-05-04 輪郭線抽出調査資料の取り込み
 
 ### 実施内容
-- 今後の実装検討用資料として、`<local-research-source>` を `docs/plans/research/edge_contour_detection_survey_2026.md` にコピーした。
+- 今後の実装検討用資料として、ローカル調査資料を `docs/plans/research/edge_contour_detection_survey_2026.md` にコピーした。
 - `docs/plans/research/` を、計画・要件・運用マニュアルとは分離した調査資料置き場として追加した。
 
 ### 検証結果
@@ -158,7 +158,7 @@
 ### 検証結果
 - `git status --short --branch`: 成功。作業開始時点の PiDiNet 関連未コミット差分と、今回追加した公開整備差分を確認した。
 - `git ls-files | rg '\.DS_Store$|assets/models|coverage|build'`: 成功。Git 管理対象の該当ヒットは `assets/models/.gitkeep` と Gradle build script のみ。
-- `rg -n "(ghp_|github_pat_|sk-|OPENAI_API_KEY|api[_-]?key|token|password|secret|client_secret|private_key)" . -S`: 成功。認証情報らしい値は検出されなかった。
+- `rg` による secret/token/password/key 系パターン確認: 成功。認証情報らしい値は検出されなかった。
 - `flutter pub get`: 成功。依存関係を解決済み。更新可能パッケージの通知のみ。
 - `dart format test/line_art_star_decoration_test.dart`: 成功。1ファイル確認、変更なし。
 - `dart analyze`: 成功扱い（exit 0）。既存 info レベル指摘 699 件あり。主な内容は `unnecessary_import`、`deprecated_member_use`、`prefer_initializing_formals`、`avoid_print`、`curly_braces_in_flow_control_structures`。
@@ -179,3 +179,26 @@
 ### 残課題
 - `dart analyze` の info レベル指摘は既存品質課題として残す。
 - PiDiNet の商用利用可否は公式 LICENSE の混在表記が残るため、商用公開時は著者確認が必要。
+
+## 2026-06-05 公開情報再監査と個人情報露出修正
+
+### 実施内容
+- GitHub 公開後の再監査で、顔が識別できる人物サンプル画像と EXIF メタデータ、公開文書内のローカル絶対パスを要対応として特定した。
+- 顔が識別できる人物サンプル画像を削除し、`ImageSelectionWidget` の検証用サンプルは犬画像のみを参照するようにした。
+- `QUICKSTART.md`、`docs/plans/plans.md`、`docs/plans/project_checklist.md`、`docs/plans/implementation_summary.md` 内のローカル絶対パスを、相対パスまたは汎用表記へ置き換えた。
+
+### 再調査結果
+- current tree の秘密情報スキャンでは、API key、GitHub token、private key、password、client secret らしい値は検出されなかった。
+- current tree の個人端末情報スキャンでは、ユーザー固有パス、ローカル一時領域パス、削除済み人物画像名のヒットはなくなった。
+- Git 管理対象に `.env`、証明書、秘密鍵、keystore、provisioning profile、ONNX モデル本体、`.DS_Store` は含まれていないことを確認した。
+- 未追跡/ignored の `build/`、`.dart_tool/`、`assets/models/*.onnx` は作業コピーに存在するが、`.gitignore` 対象で GitHub 公開対象外。
+
+### 検証結果
+- サンプル画像参照検索: 成功。人物画像参照の存在を確認後、削除対象を特定した。
+- ユーザー固有パスと人物画像名の検索: 成功。修正対象を特定した。
+- `git rm <person-sample-image>`: 成功。人物サンプル画像を Git 管理対象から削除した。
+- current tree のユーザー固有パス・ローカル一時領域パス・人物画像名検索: 成功。ヒットなし。
+- Git 管理対象の env/credential/certificate/key/provisioning/model/archive/binary artifact 名検索: 成功。ヒットなし。
+
+### 残課題
+- 通常 commit だけでは公開済み Git 履歴に削除前の人物画像と絶対パスが残るため、完全削除には history rewrite と `--force-with-lease` push が必要。

@@ -3,7 +3,7 @@
 - バージョン: 1.0
 
 ## 独立プロジェクト化チェックリスト
-- [x] `<project-root>` を作成
+- [x] 独立プロジェクトディレクトリを作成
 - [x] 最新版候補の `seizani_app` をコピー
 - [x] `project_starter_template_v4` の `.agent` と標準文書構成を取り込み
 - [x] `seizani_app` 関連文書を canonical docs へコピー
@@ -61,4 +61,3 @@
 - [x] `dart analyze` を実行
 - [x] `flutter test` を実行
 - [x] iOS SimulatorでDexiNed線画からシンプル版星座変換まで確認
-
