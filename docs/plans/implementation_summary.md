@@ -166,8 +166,17 @@
 - `flutter test test/dexined_line_art_test.dart test/pidinet_line_art_test.dart`: 成功。14 tests passed。
 - `flutter test --concurrency=1`: 成功。全 71 tests passed。
 - `git diff --check`: 成功。空白エラーなし。
+- `git commit -m "feat: prepare seizani app for OSS publication"`: 成功。commit `7cc4f0b` を作成した。
+- `gh repo view jtheonion/seizani_app --json nameWithOwner,url,isPrivate,stargazerCount,forkCount,pushedAt`: 事前確認は失敗。`jtheonion/seizani_app` は未作成だった。
+- `gh repo create jtheonion/seizani_app --public --source=. --remote=origin --description "Flutter app for on-device photo-to-line-art and constellation-style image generation"`: 成功。public repo `https://github.com/jtheonion/seizani_app` を作成し、`origin` を設定した。
+- `git push -u origin main`: 成功。`main` を `origin/main` に push し、upstream を設定した。
+- `gh repo edit jtheonion/seizani_app --enable-issues --add-topic flutter --add-topic onnx --add-topic line-art --add-topic constellation --add-topic image-processing --add-topic ai`: 成功。Issues と topics を設定した。
+- `gh repo view jtheonion/seizani_app --json nameWithOwner,url,isPrivate,stargazerCount,forkCount,pushedAt,description,repositoryTopics,hasIssuesEnabled,licenseInfo,defaultBranchRef`: 成功。public、default branch `main`、MIT License、Issues有効、topics設定済みを確認した。
+- `gh run list --repo jtheonion/seizani_app --limit 5`: 成功。初回 `Flutter CI` は実行中として確認した。
+- `git status --short --branch`: 成功。`main...origin/main` で未コミット差分なしを確認した。
+- `git remote -v`: 成功。`origin` は `https://github.com/jtheonion/seizani_app.git`。
 
 ### 残課題
-- GitHub remote 作成、commit、push、GitHub repo metadata 設定はこの記録時点では未完了。
+- GitHub Actions 初回 CI は確認時点で `in_progress`。完了後の結論確認が必要。
 - `dart analyze` の info レベル指摘は既存品質課題として残す。
 - PiDiNet の商用利用可否は公式 LICENSE の混在表記が残るため、商用公開時は著者確認が必要。
