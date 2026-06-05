@@ -1,0 +1,59 @@
+name: Bug report
+description: Report a reproducible problem in seizani_app.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not attach personal photos, identifiable faces, EXIF-bearing images, secrets, API keys, tokens, or ONNX model binaries.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the problem briefly.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the smallest reliable reproduction steps.
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Run ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include Flutter, Dart, OS, device, and whether local ONNX models are present.
+      placeholder: |
+        Flutter:
+        Dart:
+        OS:
+        Device:
+        Models:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Redact secrets and avoid personal images.
+    validations:
+      required: false
