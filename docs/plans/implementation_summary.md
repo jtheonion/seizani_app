@@ -97,6 +97,25 @@
 - MEMO、MatchED、TRACE の公式コード・重み公開状況は将来再確認が必要。
 - 実装変更は未実施。
 
+## 2026-06-08 公開保守文書の一般化整理
+
+### 実施内容
+- 未追跡の改善計画書を `docs/plans/execplans/daily_low_risk_oss_maintenance_plan.md` として repo 内の通常計画へ戻した。
+- `README.md`、`CONTRIBUTING.md`、`docs/plans/plans.md`、`docs/plans/implementation_summary.md` から、プロダクトの実装・保守・公開安全性に直接関係しない外部制度情報を削除または一般化した。
+- `.agent/DOCS.md` に、公開文書と canonical docs へプロダクトの実装・保守・公開安全性に直接関係しない外部制度情報を書かないルールを追加した。
+
+### 検証結果
+- `git status --short --branch`: 成功。作業開始時点で既存 docs-only 差分と未追跡改善計画書を確認した。
+- `rg -n <external-process-pattern> .`: 成功。整理対象の所在を確認した。
+- `apply_patch`: 成功。`.gitignore`、`.agent/DOCS.md`、`README.md`、`CONTRIBUTING.md`、`docs/plans/plans.md`、`docs/plans/implementation_summary.md`、`docs/plans/execplans/daily_low_risk_oss_maintenance_plan.md` を更新した。
+- `mv <previous-plan-location> docs/plans/execplans/daily_low_risk_oss_maintenance_plan.md`: 成功。計画書を repo 内の通常計画へ戻した。
+- `rg -n <external-process-pattern> README.md CONTRIBUTING.md docs/plans/plans.md docs/plans/implementation_summary.md docs/plans/execplans/daily_low_risk_oss_maintenance_plan.md .agent/DOCS.md .gitignore`: 成功。主要な公開・canonical docs に対象文言のヒットがないことを確認する。
+- `git diff --check`: 成功。空白エラーなし。
+
+### 残課題
+- 既にリモートへ反映済みの過去履歴は書き換えていない。
+- 今後の docs には、プロダクトの実装・保守・公開安全性に直接関係しない外部制度情報を残さない。
+
 ## 2026-05-05 PiDiNet線画方式追加
 
 ### 実施内容
@@ -139,184 +158,3 @@
 ### 検証結果
 - `dart format lib/presentation/providers/line_art_processing_provider.dart test/dexined_line_art_test.dart`: 成功。
 - `flutter test test/dexined_line_art_test.dart test/pidinet_line_art_test.dart`: 成功。14 tests passed。
-
-## 2026-06-05 GitHub公開public-readiness整備
-
-### 実施内容
-- public maintenance reviewpublic-readinessに、GitHub 公開候補として `seizani_app` を整備した。
-- `README.md` を公開向けに更新し、目的、主要機能、ONNX モデル取得/生成方針、検証コマンド、保守方針、ライセンス導線を明記した。
-- `pubspec.yaml` の説明を Flutter 初期値から、写真を線画・星座風画像へ変換する on-device ONNX inference app の説明へ更新した。
-- `LICENSE` を追加し、MIT License として公開できる状態にした。
-- `.github/workflows/flutter-ci.yml` を追加し、push / pull request で `flutter pub get`、`dart analyze`、`flutter test` を実行する最小 CI を定義した。
-- `PiDiNet線画` 表示順調整後に `写真` カードが初期表示外になるため、`test/line_art_star_decoration_test.dart` にスクロール操作を追加して既存テストを現 UI に合わせた。
-
-### 公開前衛生確認
-- Git 管理対象に `.DS_Store`、ONNX モデル本体、coverage 出力、build 出力が含まれていないことを確認した。
-- `rg` による秘密情報スキャンで、認証情報らしい値は検出されなかった。ヒットは `Task-Adaptive`、`relevant`、`tokens` などの一般語のみ。
-- `assets/models/*.onnx` は `.gitignore` 対象のまま維持し、モデル本体は再配布せず取得/生成手順だけを README に記載した。
-
-### 検証結果
-- `git status --short --branch`: 成功。作業開始時点の PiDiNet 関連未コミット差分と、今回追加した公開整備差分を確認した。
-- `git ls-files | rg '\.DS_Store$|assets/models|coverage|build'`: 成功。Git 管理対象の該当ヒットは `assets/models/.gitkeep` と Gradle build script のみ。
-- `rg` による secret/token/password/key 系パターン確認: 成功。認証情報らしい値は検出されなかった。
-- `flutter pub get`: 成功。依存関係を解決済み。更新可能パッケージの通知のみ。
-- `dart format test/line_art_star_decoration_test.dart`: 成功。1ファイル確認、変更なし。
-- `dart analyze`: 成功扱い（exit 0）。既存 info レベル指摘 699 件あり。主な内容は `unnecessary_import`、`deprecated_member_use`、`prefer_initializing_formals`、`avoid_print`、`curly_braces_in_flow_control_structures`。
-- `flutter test test/line_art_star_decoration_test.dart`: 成功。5 tests passed。
-- `flutter test test/dexined_line_art_test.dart test/pidinet_line_art_test.dart`: 成功。14 tests passed。
-- `flutter test --concurrency=1`: 成功。全 71 tests passed。
-- `git diff --check`: 成功。空白エラーなし。
-- `git commit -m "feat: prepare seizani app for OSS publication"`: 成功。commit `7cc4f0b` を作成した。
-- `gh repo view jtheonion/seizani_app --json nameWithOwner,url,isPrivate,stargazerCount,forkCount,pushedAt`: 事前確認は失敗。`jtheonion/seizani_app` は未作成だった。
-- `gh repo create jtheonion/seizani_app --public --source=. --remote=origin --description "Flutter app for on-device photo-to-line-art and constellation-style image generation"`: 成功。public repo `https://github.com/jtheonion/seizani_app` を作成し、`origin` を設定した。
-- `git push -u origin main`: 成功。`main` を `origin/main` に push し、upstream を設定した。
-- `gh repo edit jtheonion/seizani_app --enable-issues --add-topic flutter --add-topic onnx --add-topic line-art --add-topic constellation --add-topic image-processing --add-topic ai`: 成功。Issues と topics を設定した。
-- `gh repo view jtheonion/seizani_app --json nameWithOwner,url,isPrivate,stargazerCount,forkCount,pushedAt,description,repositoryTopics,hasIssuesEnabled,licenseInfo,defaultBranchRef`: 成功。public、default branch `main`、MIT License、Issues有効、topics設定済みを確認した。
-- `gh run list --repo jtheonion/seizani_app --limit 5`: 成功。`feat: prepare seizani app for OSS publication` と `docs: record OSS publication setup` の `Flutter CI` はどちらも `completed/success` を確認した。
-- `git status --short --branch`: 成功。`main...origin/main` で未コミット差分なしを確認した。
-- `git remote -v`: 成功。`origin` は `https://github.com/jtheonion/seizani_app.git`。
-
-### 残課題
-- `dart analyze` の info レベル指摘は既存品質課題として残す。
-- PiDiNet の商用利用可否は公式 LICENSE の混在表記が残るため、商用公開時は著者確認が必要。
-
-## 2026-06-05 公開情報再監査と個人情報露出修正
-
-### 実施内容
-- GitHub 公開後の再監査で、顔が識別できる人物サンプル画像と EXIF メタデータ、公開文書内のローカル絶対パスを要対応として特定した。
-- 顔が識別できる人物サンプル画像を削除し、`ImageSelectionWidget` の検証用サンプルは犬画像のみを参照するようにした。
-- `QUICKSTART.md`、`docs/plans/plans.md`、`docs/plans/project_checklist.md`、`docs/plans/implementation_summary.md` 内のローカル絶対パスを、相対パスまたは汎用表記へ置き換えた。
-
-### 再調査結果
-- current tree の秘密情報スキャンでは、API key、GitHub token、private key、password、client secret らしい値は検出されなかった。
-- current tree の個人端末情報スキャンでは、ユーザー固有パス、ローカル一時領域パス、削除済み人物画像名のヒットはなくなった。
-- Git 管理対象に `.env`、証明書、秘密鍵、keystore、provisioning profile、ONNX モデル本体、`.DS_Store` は含まれていないことを確認した。
-- 未追跡/ignored の `build/`、`.dart_tool/`、`assets/models/*.onnx` は作業コピーに存在するが、`.gitignore` 対象で GitHub 公開対象外。
-
-### 検証結果
-- サンプル画像参照検索: 成功。人物画像参照の存在を確認後、削除対象を特定した。
-- ユーザー固有パスと人物画像名の検索: 成功。修正対象を特定した。
-- `git rm <person-sample-image>`: 成功。人物サンプル画像を Git 管理対象から削除した。
-- current tree のユーザー固有パス・ローカル一時領域パス・人物画像名検索: 成功。ヒットなし。
-- Git 管理対象の env/credential/certificate/key/provisioning/model/archive/binary artifact 名検索: 成功。ヒットなし。
-
-### 残課題
-- 公開済み Git 履歴に残っていた削除前の人物画像とローカル絶対パスについて、history rewrite を実施した。
-- rewrite 後の Git 履歴検索で、人物画像名、ユーザー固有パス、秘密情報らしい具体値のヒットがないことを確認した。
-- GitHub 側には `--force-with-lease` で更新する。
-
-### 履歴再監査の検証結果
-- `git rev-list --all --objects` による履歴内オブジェクト名検索: 成功。人物画像名、ユーザー固有パス、ONNX モデル本体、`.DS_Store` のヒットなし。
-- `git rev-list --all | xargs git grep` による履歴内本文検索: 成功。人物画像名、ユーザー固有パス、秘密情報らしい具体値のヒットなし。
-- `rg` による current tree 本文検索: 成功。人物画像名、ユーザー固有パス、秘密情報らしい具体値のヒットなし。
-- `git ls-files` による公開対象ファイル名検索: 成功。`assets/models/.gitkeep` 以外にモデル、env、証明書、秘密鍵、provisioning profile、`.DS_Store` は含まれていない。
-- `git push --force-with-lease` による GitHub main 更新: 成功。書き換え済み履歴を public repo に反映した。
-- `git ls-remote origin refs/heads/main`: 成功。GitHub 側 main が書き換え済み HEAD を指していることを確認した。
-- `gh run list --repo jtheonion/seizani_app --limit 5`: 成功。履歴書き換え前に実行済みの `Flutter CI` は成功状態として確認できた。今回の記録コミットは `[skip ci]` のため追加 CI は発火していない。
-
-## 2026-06-05 public maintenance reviewpublic maintenance reviewと低リスク整備
-
-### 実施内容
-- public maintenance review public maintenanceに向けて、キャンペーン条件、external terms、X 投稿、関連引用、X 利用規約/Authenticity policy、公開 GitHub repo 状態を再確認した。
-- `docs/plans/execplans/oss_campaign_application_reevaluation.md` を一時追加し、調査、判断、改善、検証を 1 本の ExecPlan として記録した。その後、ユーザー指示により `Project/hanyou/docs/plans/execplans/2026-06-05_openai-oss-campaign-seizani-reevaluation.md` へ移設した。
-- `README.md` に `Why This Project` と保守/安全性の説明を追加し、on-device ONNX inference、モデル非再配布、CI / tests、Issue triage、Codex 活用の保守用途を説明しやすくした。
-- `CONTRIBUTING.md` を追加し、Issue / PR の期待情報、検証コマンド、個人画像・EXIF・秘密情報・モデル本体を添付しないルールを明文化した。
-- `.github/ISSUE_TEMPLATE/bug_report.yml` と `.github/ISSUE_TEMPLATE/feature_request.yml` を追加し、再現手順、環境、期待/実際の結果、スコープ確認を構造化した。
-- `.github/workflows/flutter-ci.yml` に `workflow_dispatch`、`permissions: contents: read`、`timeout-minutes: 20` を追加した。
-- `docs/plans/plans.md` に今回の判断と検証方針を追記した。
-
-### 外部確認結果
-- 取得日時: 2026-06-05 02:27 JST 以降。
-- 対象 X 投稿: `https://x.com/L_go_mrk/status/2061404893437427745`。`twitter-mirror-fetcher` により `api.fxtwitter` から取得成功、confidence は high。本文は external platform 公式フォーム `external reference` を紹介する内容だった。
-- 関連引用: `https://api.fxtwitter.com/2/status/2061404893437427745/quotes` で 7 件を確認。公式条件を補強する一次情報ではないため、public maintenance条件判断には使わない。公開 repo を見せかけに使う趣旨の引用があり、これは external terms の正確性・権限・不正禁止に反する方向として不採用にする。
-- external platform 公式フォーム: `external reference`。input fieldsは GitHub username / repository URL / maintainer role / qualification / external platform account identifier / maintenance resources use など。固定締切は確認できず、continuous review と明記。
-- external platform Program page: `external reference`。対象は open-source maintainers、提供内容は 6 months of ChatGPT Pro with Codex、conditional security tooling、maintenance resources。
-- external terms: `external reference`。正確・完全な情報、maintainer / repo control verification、benefit の非譲渡、不正・複数 identity・虚偽情報・無権限 repository scan 禁止を確認。
-- X Terms / Authenticity policy: `https://x.com/en/tos`、`https://help.x.com/en/rules-and-policies/authenticity`。自動化、scraping、spam、複数 account coordination、engagement spam、虚偽/欺瞞的 content は避ける必要がある。
-
-### GitHub / repo 現状確認
-- `gh repo view jtheonion/seizani_app --json nameWithOwner,url,isPrivate,description,repositoryTopics,hasIssuesEnabled,licenseInfo,defaultBranchRef,pushedAt,stargazerCount,forkCount`: 成功。public、default branch `main`、MIT License、Issues 有効、topics は `ai` / `constellation` / `flutter` / `image-processing` / `line-art` / `onnx`、stars 0、forks 0、pushedAt `2026-06-04T17:17:01Z`。
-- `gh run list --repo jtheonion/seizani_app --limit 10`: 成功。`Flutter CI` は直近 2 runs が completed/success。
-- `gh issue list --repo jtheonion/seizani_app --limit 20`: 成功。open issue なし。
-- `git log --oneline --decorate -5`: 成功。HEAD は `5fbd207 (HEAD -> main, origin/main) docs: record GitHub scrub verification [skip ci]`。
-- `git remote -v`: 成功。origin は `https://github.com/jtheonion/seizani_app.git`。
-
-### 公開安全性確認
-- `rg -n -S '<secret-token-key-password-pattern>' .`: 成功。ヒットなし。
-- `git ls-files --cached --others --exclude-standard | rg -i '(\\.env$|\\.pem$|\\.key$|\\.p12$|\\.mobileprovision$|\\.DS_Store$|assets/models/.*\\.onnx$|build/|coverage/)'`: 成功。ヒットなし。
-- `git rev-list --all --objects | rg -i '(\\.onnx$|\\.DS_Store$|sample_person|person|human|face|portrait|Users/|private/var|\\.env$|\\.pem$|\\.key$|\\.p12$|\\.mobileprovision$)'`: 成功。ヒットなし。
-- `git rev-list --all | xargs git grep -n -I -E '<secret-token-key-password-user-path-pattern>'`: 成功。ヒットなし。
-
-### 検証結果
-- `python3 <codex-home>/skills/twitter-mirror-fetcher/scripts/fetch_status.py 'https://x.com/L_go_mrk/status/2061404893437427745' --json --timeout 20`: 成功。`source_method=api.fxtwitter`、`confidence=high`。
-- `curl -sL 'https://api.fxtwitter.com/2/status/2061404893437427745/quotes'`: 成功。関連引用 7 件を確認。
-- `ruby -e "require 'yaml'; ... YAML.load_file(...)"`: 成功。workflow と issue template の YAML 構文を確認した。
-- `flutter pub get`: 成功。依存関係解決済み。更新可能パッケージ通知のみ。
-- `dart analyze`: sandbox では Flutter SDK cache 書き込み権限で失敗。承認付き再実行は exit 0。既存 info 指摘 233 件あり。
-- `flutter test`: sandbox では Flutter SDK cache 書き込み権限で失敗。承認付き再実行は成功。全 71 tests passed。
-- `git diff --check`: 成功。空白エラーなし。
-- `git status --short --branch`: 成功。変更対象は `README.md`、`.github/workflows/flutter-ci.yml`、`CONTRIBUTING.md`、`.github/ISSUE_TEMPLATE/*`、`docs/plans/plans.md`、`docs/plans/implementation_summary.md`。一時 ExecPlan は `Project/hanyou` 側へ移設済み。
-
-### 残課題
-- `dart analyze` の info レベル指摘 233 件は既存品質課題として残す。
-- stars / forks / issues / downstream usage はまだ弱いため、public descriptionでは採用実績を誇張せず、再現可能な端末内 AI 画像処理 OSS、保守安全性、CI / tests、Codex 活用計画を主軸にする。
-- public intake送信、X 投稿、GitHub commit / push は未実施。実行にはユーザー承認が必要。
-
-## 2026-06-05 public maintenance reviewpublic-readiness Codex 担当タスク最終確認
-
-### 実施内容
-- 既存の未コミット差分を確認し、public-readiness改善の範囲が `README.md`、`CONTRIBUTING.md`、`.github/ISSUE_TEMPLATE/*`、`.github/workflows/flutter-ci.yml`、`docs/plans/plans.md`、`docs/plans/implementation_summary.md` に限定されていることを確認した。
-- README / CONTRIBUTING / Issue template / CI metadata の文言を確認し、採用実績を誇張せず、privacy-conscious on-device AI image processing、Flutter + ONNX、モデル本体を Git 管理しない方針、CI / tests / docs / Issue triage、Codex の OSS 保守用途を主軸にしていると判断した。
-- external platform 公式ページを再確認し、maintainer support、public intake項目、continuous review、external terms への同意導線が継続していることを確認した。public intake送信、account identifier 取得、X 投稿、外部サービスへの投稿は実施していない。
-
-### 公開安全性確認
-- current tree の秘密情報パターン検索: ヒットなし。
-- Git 管理対象と未追跡公開候補の env / certificate / key / provisioning profile / `.DS_Store` / ONNX モデル本体 / build / coverage 名検索: ヒットなし。
-- Git 履歴オブジェクト名の ONNX / `.DS_Store` / 人物画像名 / 個人端末パス / env / certificate / key / provisioning profile 名検索: ヒットなし。
-- `gh auth status`: active account は GitHub 操作可能。inactive な別アカウント警告によりコマンド自体は exit 1 だったが、後続の `gh repo view` と `gh run list` は成功した。
-
-### 検証結果
-- `git status --short --branch`: 成功。変更対象はpublic-readiness改善ファイルに限定。
-- `git diff --stat`: 成功。README、CI workflow、計画ログ、実施記録の差分を確認。
-- `git diff -- README.md CONTRIBUTING.md .github/workflows/flutter-ci.yml .github/ISSUE_TEMPLATE/bug_report.yml .github/ISSUE_TEMPLATE/feature_request.yml docs/plans/plans.md docs/plans/implementation_summary.md`: 成功。untracked の CONTRIBUTING / issue templates は個別表示で内容確認。
-- `git log --oneline --decorate -5`: 成功。HEAD は `5fbd207 docs: record GitHub scrub verification [skip ci]`。
-- `ruby -e "require 'yaml'; ... YAML.load_file(...)"`: 成功。workflow と issue template の YAML 構文を確認。
-- `flutter pub get`: 成功。依存関係解決済み。更新可能パッケージ通知のみ。
-- `dart analyze`: sandbox では Flutter SDK cache 書き込み権限で失敗。承認付き再実行は exit 0。既存 info 指摘 233 件あり。
-- `flutter test`: sandbox では Flutter SDK cache 書き込み権限で失敗。承認付き再実行は成功。全 71 tests passed。
-- `git diff --check`: 成功。空白エラーなし。
-- `gh repo view jtheonion/seizani_app --json nameWithOwner,url,isPrivate,description,repositoryTopics,hasIssuesEnabled,licenseInfo,defaultBranchRef,pushedAt,stargazerCount,forkCount`: 成功。public、default branch `main`、MIT License、Issues 有効、topics 設定済み、stars 0、forks 0。
-- `gh run list --repo jtheonion/seizani_app --limit 10`: 成功。直近の `Flutter CI` は 2 件とも completed/success。
-
-### public descriptionドラフト
-
-#### Role
-Primary maintainer。公開リポジトリの owner として、docs、tests、CI、issue triage、個人写真・EXIF 付き画像・秘密情報・モデル本体を公開しない保守ルールの整備を担当しています。
-
-#### Why does this repository qualify?
-seizani_app は、写真を端末内で線画化し星座風画像へ変換する Flutter OSS アプリです。Flutter + ONNX による privacy-conscious な on-device AI image processing の実装例であり、モデル本体は Git 管理せず取得・検証手順を文書化しています。stars / forks はまだ小さいため、広範な採用実績ではなく、保守中の安全性重視 OSS 実装としてpublicly describe it。
-
-#### How will you use maintenance resources?
-maintenance resources は、このリポジトリの正当な OSS 保守に限定して使います。具体的には code review 補助、test/log 要約、issue triage、docs 改善、CI / release workflow 改善、必要に応じた安全性確認です。無権限 scan、spam、自動投稿、engagement 目的、同意のない個人画像処理には使いません。
-
-#### Anything else
-この repo は public / MIT License で、ユーザー画像を外部送信せず端末内推論で処理する方針です。public-readiness整備として CONTRIBUTING、Issue template、CI metadata、README の安全性・モデル再配布・テスト・Codex 活用方針を改善しました。
-
-### 残課題
-- public intake送信、external platform account identifier 確認、本人アカウントでの X / GitHub 告知はユーザー手動タスクとして残す。
-- GitHub Actions の annotation として `actions/checkout@v4` の Node.js 20 deprecation warning が表示された。今回の `Flutter CI` は成功しているためpublic-readinessブロッカーではないが、将来の CI 保守課題として残す。
-
-### Commit / Push / GitHub Actions 結果
-- `git add README.md CONTRIBUTING.md .github/ISSUE_TEMPLATE/bug_report.yml .github/ISSUE_TEMPLATE/feature_request.yml .github/workflows/flutter-ci.yml docs/plans/plans.md docs/plans/implementation_summary.md`: 成功。public-readiness改善 7 ファイルだけを stage した。
-- `git diff --cached --stat`: 成功。7 files changed, 261 insertions。
-- `git diff --cached --check`: 成功。空白エラーなし。
-- `git commit -m "docs: improve OSS campaign readiness"`: 成功。commit は `9cc398968a7ed68378be72aaf0fe77f72759caf3`。
-- `git fetch origin main`: sandbox では `.git/FETCH_HEAD` 書き込み権限で失敗。承認付き再実行は成功。push 前に remote の想定外更新がないことを確認した。
-- `git push origin main`: GitHub への push は成功し、`5fbd207..9cc3989 main -> main` を確認した。sandbox 制限によりローカル `origin/main` 参照更新だけ失敗したため、承認付き `git fetch origin main` で追跡参照を同期した。
-- `git status --short --branch`: 成功。`main...origin/main` で未コミット差分なしを確認した。
-- `gh run list --repo jtheonion/seizani_app --limit 10`: 成功。`docs: improve OSS campaign readiness` の `Flutter CI` run `27017462183` が起動し、その後 completed/success になった。
-- `gh run watch 27017462183 --repo jtheonion/seizani_app --exit-status`: 成功。`Analyze` と `Test` を含む job `test` は 53s で完了した。
-- `gh run view 27017462183 --repo jtheonion/seizani_app --json databaseId,status,conclusion,headBranch,headSha,event,workflowName,url,createdAt,updatedAt`: 成功。`status=completed`、`conclusion=success`、`headSha=9cc398968a7ed68378be72aaf0fe77f72759caf3`、URL は `https://github.com/jtheonion/seizani_app/actions/runs/27017462183`。
-
-### 記録方針
-- この最終結果追記は docs-only の公開記録であり、public-readiness改善 commit の CI 成功後に `[skip ci]` commit として push した。

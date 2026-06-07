@@ -75,7 +75,6 @@ flutter devices
 - 外部モデルの license / redistribution condition は公開前に確認し、モデル本体は必要に応じて取得手順だけを提供します。
 - PR / push では GitHub Actions で `flutter pub get`、`dart analyze`、`flutter test` を実行します。
 - Issue では不具合の再現条件、環境、期待結果、実際の結果を分けて記録し、個人写真、EXIF 付き画像、秘密情報、モデル本体の添付は避けます。
-- security tooling や maintenance resources を利用できる場合でも、対象は自分が管理・確認権限を持つこのリポジトリと正当な OSS 保守作業に限定します。
 
 ## Contributing
 

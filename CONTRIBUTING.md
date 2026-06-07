@@ -27,5 +27,4 @@ git diff --check
 ## Security And Privacy
 
 - 脆弱性や悪用手順を公開 issue に詳細掲載しないでください。まず、最小限の説明で maintainer に連絡する issue を作成してください。
-- security tooling や類似ツールを使う場合は、自分が管理または確認権限を持つコードだけを対象にしてください。
 - 外部モデルの license / redistribution condition が不明な場合、モデル本体は追加せず、取得・生成手順と確認待ち事項だけを記録してください。
