@@ -23,7 +23,7 @@
 - [x] 短時間で進められる低リスク改善候補を棚卸しした。
 - [x] 1 日 1 件で進められる順序へ整理した。
 - [x] 公開安全性と contributor-facing docs を上位に繰り上げた。
-- [ ] Day 1: `SECURITY.md` を追加し、公開 issue に載せない情報と報告方針を明確化する。
+- [x] Day 1: `SECURITY.md` を追加し、公開 issue に載せない情報と報告方針を明確化する。
 - [ ] Day 2: `MODEL_LICENSES.md` または README / QUICKSTART の model provenance section を追加し、DexiNed / PiDiNet の取得元、SHA256、再配布可否、PiDiNet 商用利用要確認を明確化する。
 - [ ] Day 3: ignored artifact と誤 add 防止の safety scan を整備する。
 - [ ] Day 4: README に CI status badge と Actions 導線を追加する。
@@ -63,7 +63,12 @@
 
 ## Outcomes & Retrospective
 
-未実施。各日の作業後に、完了した改善、検証結果、残ったリスク、翌日の調整を追記する。
+### 2026-06-15 Day 1
+
+- `SECURITY.md` を追加し、サポート対象範囲、脆弱性・公開安全性問題の報告方針、public issue に載せない情報、画像処理・ONNX モデル・依存関係・CI の報告観点、モデルファイルを Git 管理しない方針、緊急度の目安を明確化した。
+- `README.md` と `CONTRIBUTING.md` から `SECURITY.md` への短い導線を追加した。
+- 個人連絡先、秘密情報、認証情報、モデル本体、大容量ファイル、依存追加、license 変更は追加していない。
+- docs-only 変更のため、`dart analyze` と `flutter test` は実行しなかった。
 
 ## Context and Orientation
 
@@ -98,10 +103,10 @@
 - 検証: GitHub 上の Security policy 表示、`rg -n "EXIF|secrets|model binaries|personal" SECURITY.md CONTRIBUTING.md`。
 - 観点: 公開安全性、docs。
 - チェックリスト:
-  - [ ] 公開しない情報のリストを `CONTRIBUTING.md` と揃えた。
-  - [ ] 悪用手順や秘密情報を issue に載せない方針を明記した。
-  - [ ] 報告先に個人情報を追加しないことを確認した。
-  - [ ] `implementation_summary.md` に追加理由と検証を記録した。
+  - [x] 公開しない情報のリストを `CONTRIBUTING.md` と揃えた。
+  - [x] 悪用手順や秘密情報を issue に載せない方針を明記した。
+  - [x] 報告先に個人情報を追加しないことを確認した。
+  - [x] `implementation_summary.md` に追加理由と検証を記録した。
 
 ### Day 2: model provenance / `MODEL_LICENSES.md`
 

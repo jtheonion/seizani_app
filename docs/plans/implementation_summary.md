@@ -158,3 +158,23 @@
 ### 検証結果
 - `dart format lib/presentation/providers/line_art_processing_provider.dart test/dexined_line_art_test.dart`: 成功。
 - `flutter test test/dexined_line_art_test.dart test/pidinet_line_art_test.dart`: 成功。14 tests passed。
+
+## 2026-06-15 SECURITY.md 追加
+
+### 実施内容
+- `SECURITY.md` を追加し、サポート対象範囲、脆弱性・公開安全性問題の報告方針、public issue に載せない情報、画像処理・ONNX モデル・依存関係・CI の報告観点、モデルファイルを Git 管理しない方針、緊急度の目安を記載した。
+- `README.md` と `CONTRIBUTING.md` に `SECURITY.md` への短い導線を追加した。
+- `docs/plans/execplans/daily_low_risk_oss_maintenance_plan.md` の Day 1 を完了に更新し、`docs/plans/plans.md` に同期記録を追記した。
+- 個人連絡先、秘密情報、認証情報、モデル本体、大容量ファイル、依存追加、license 変更は追加していない。
+
+### 検証結果
+- `git status --short --branch`: 成功。変更対象が `SECURITY.md`、`README.md`、`CONTRIBUTING.md`、`docs/plans/execplans/daily_low_risk_oss_maintenance_plan.md`、`docs/plans/plans.md`、`docs/plans/implementation_summary.md` であることを確認した。
+- `rg -n "<指定の外部制度文脈パターン>" SECURITY.md README.md CONTRIBUTING.md docs .agent`: ヒットなし（rg exit 1）。検索対象に `docs` を含むため、実施記録内ではパターン本文を再掲しない。
+- `rg -n "個人写真|EXIF|秘密情報|認証情報|モデル本体|ONNX|CI|Critical|High|Medium|Low" SECURITY.md README.md CONTRIBUTING.md`: 成功。`SECURITY.md` と既存 contributor-facing docs に必要な公開安全性方針が含まれることを確認した。
+- `git diff --check`: 成功。空白エラーなし。
+
+### 実行しなかった検証
+- `dart analyze` と `flutter test` は docs-only 変更でアプリコード、依存関係、テストを変更していないため実行しなかった。
+
+### 残課題
+- GitHub 上の Security policy 表示確認はローカル作業では未実施。反映後に必要に応じて確認する。

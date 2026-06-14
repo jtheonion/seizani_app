@@ -122,3 +122,18 @@ PM、デザイナー、エンジニア、QAがレビューできる粒度で、`
 - PiDiNet後処理、JSON round-trip、metadata、プリセット登録、Widget上の表示をテストする。
 - `python3 tool/export_pidinet_onnx.py` で公式 checkpoint から ONNX を生成できることを確認する。
 - `flutter test` と `dart analyze` を実施する。
+
+### 2026-06-15 Security policy 追加
+
+#### 目的
+脆弱性、公開安全性問題、個人画像、EXIF、秘密情報、モデル本体の扱いを contributor-facing な標準文書として明確化する。
+
+#### 決定
+- `SECURITY.md` を追加し、public issue に載せない情報、報告時の最小情報、画像処理・ONNX モデル・依存関係・CI の確認観点、モデルファイルを Git 管理しない方針、緊急度の目安を記載する。
+- 個人連絡先や秘密情報は追加せず、詳細を public issue に載せられない場合は最小限の概要だけで maintainer の確認を求める運用にする。
+- `README.md` と `CONTRIBUTING.md` には `SECURITY.md` への短い導線だけを追加し、docs-only の最小差分に留める。
+
+#### 検証
+- 変更対象が docs-only であることを確認する。
+- 指定の文言スキャンで外部制度文脈や秘密情報に関わる固有表現が混入していないことを確認する。
+- `dart analyze` と `flutter test` は docs-only 変更のため実行しない。
